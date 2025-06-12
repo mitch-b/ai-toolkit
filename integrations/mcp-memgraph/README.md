@@ -4,7 +4,7 @@ Memgraph MCP Server is a lightweight server implementation of the Model Context 
 
 ![mcp-server](./mcp-server.png)
 
-## Run Memgraph MCP server
+## Run Memgraph MCP server with Claude
 
 1. Install [`uv`](https://docs.astral.sh/uv/getting-started/installation/)
 2. Install [Claude for Desktop](https://claude.ai/download).
@@ -108,6 +108,123 @@ Uses `BetweennessCentralityTool` under the hood.
 Compute PageRank scores for all nodes.  
 Uses `PageRankTool` under the hood.
 
-## 🗺️ Roadmap
+## 🐳 Run Memgraph MCP server with Docker
 
-The Memgraph MCP Server is just at its beginnings. We're actively working on expanding its capabilities and making it even easier to integrate Memgraph into modern AI workflows.
+### Building Memgraph MCP image
+
+To build the Docker image using your local `memgraph-toolbox` code, run from the root of the monorepo:
+
+```bash
+cd /path/to/ai-toolkit
+docker build -f integrations/mcp-memgraph/Dockerfile -t mcp-memgraph:latest .
+```
+
+This will include your local `memgraph-toolbox` and install it inside the image.
+
+### Running the Docker image
+
+#### 1. Streamable HTTP mode (recommended for most users)
+
+To connect to local Memgraph containers, by default the MCP server will be available at `http://localhost:8000/mcp/`:
+
+```bash
+docker run --rm mcp-memgraph:latest
+```
+
+#### 2. Stdio mode (for integration with MCP stdio clients)
+
+Configure your MCP host to run the docker command and utilize stdio:
+
+```bash
+docker run --rm -i -e MCP_TRANSPORT=stdio mcp-memgraph:latest
+```
+
+> 📄 Note: By default, the server will connect to a Memgraph instance running on localhost docker network `bolt://host.docker.internal:7687`. If you have a Memgraph instance running on a different host or port, you can specify it using environment variables.
+
+#### 3. Custom Memgraph connection (external instance, no host network)
+
+To avoid using host networking, or to connect to an external Memgraph instance:
+
+```bash
+docker run --rm \
+  -p 8000:8000 \
+  -e MEMGRAPH_URL=bolt://memgraph:7687 \
+  -e MEMGRAPH_USER=myuser \
+  -e MEMGRAPH_PASSWORD=password \
+  mcp-memgraph:latest
+```
+
+### Connecting from VS Code (HTTP server)
+
+If you are using VS Code MCP extension or similar, your configuration for an HTTP server would look like:
+
+```json
+{
+    "servers": {
+        "mcp-memgraph-http": {
+            "url": "http://localhost:8000/mcp/"
+        }
+    }
+}
+```
+
+> **Note:** The URL must end with `/mcp/`.
+
+---
+
+#### Running the Docker image in Visual Studio Code using stdio
+
+You can also run the server using stdio for integration with MCP stdio clients:
+
+1. Open Visual Studio Code, open Command Palette (Ctrl+Shift+P or Cmd+Shift+P on Mac), and select `MCP: Add server...`.
+2. Choose `Command (stdio)`
+3. Enter `docker` as the command to run.
+4. For Server ID enter `mcp-memgraph`.
+5. Choose "User" (adds to user-space `settings.json`) or "Workspace" (adds to `.vscode/mcp.json`).
+
+When the settings open, enhance the args as follows:
+
+```json
+{
+    "servers": {
+        "mcp-memgraph": {
+            "type": "stdio",
+            "command": "docker",
+            "args": [
+                "run",
+                "--rm",
+                "-i",
+                "-e", "MCP_TRANSPORT=stdio",
+                "mcp-memgraph:latest"
+            ]
+        }
+    }
+}
+```
+
+To connect to a remote Memgraph instance with authentication, add environment variables to the `args` list:
+
+```json
+{
+    "servers": {
+        "mcp-memgraph": {
+            "type": "stdio",
+            "command": "docker",
+            "args": [
+                "run",
+                "--rm",
+                "-i",
+                "-e", "MCP_TRANSPORT=stdio",
+                "-e", "MEMGRAPH_URL=bolt://memgraph:7687",
+                "-e", "MEMGRAPH_USER=myuser",
+                "-e", "MEMGRAPH_PASSWORD=mypassword",
+                "mcp-memgraph:latest"
+            ]
+        }
+    }
+}
+```
+
+---
+
+Open GitHub Copilot in Agent mode and you'll be able to interact with the Memgraph MCP server.
