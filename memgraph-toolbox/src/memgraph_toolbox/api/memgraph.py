@@ -1,4 +1,6 @@
 from typing import Any, Dict, List, Optional
+from .memgraph_config import MemgraphConfigDict
+
 import os
 from neo4j import GraphDatabase
 
@@ -14,7 +16,7 @@ class Memgraph:
         username: str = None,
         password: str = None,
         *,
-        memgraph_config: Optional[Dict] = None,
+        memgraph_config: Optional[MemgraphConfigDict] = None,
         driver_config: Optional[Dict] = None,
     ):
         """
@@ -30,7 +32,8 @@ class Memgraph:
             url: The Memgraph connection URL
             username: Username for authentication
             password: Password for authentication
-            memgraph_config: Optional dict for Memgraph-specific config (e.g., {"database": "mydb"})
+            memgraph_config: Optional dict for Memgraph-specific config. Supported keys:
+                - database: str (e.g., {"database": "mydb"})
             driver_config: Additional Neo4j driver configuration
         """
 

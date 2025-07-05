@@ -1,6 +1,7 @@
 from mcp.server.fastmcp import FastMCP
 
 from memgraph_toolbox.api.memgraph import Memgraph
+from memgraph_toolbox.api.memgraph_config import MemgraphConfigDict
 from memgraph_toolbox.tools.cypher import CypherTool
 from memgraph_toolbox.tools.config import ShowConfigTool
 from memgraph_toolbox.tools.index import ShowIndexInfoTool
@@ -18,7 +19,6 @@ from typing import Any, Dict, List
 # Configure logging
 logger = logger_init("mcp-memgraph")
 
-
 # Initialize FastMCP server with stateless HTTP (for streamable-http transport)
 mcp = FastMCP("mcp-memgraph", stateless_http=True)
 
@@ -34,7 +34,7 @@ db = Memgraph(
     url=MEMGRAPH_URL,
     username=MEMGRAPH_USER,
     password=MEMGRAPH_PASSWORD,
-    memgraph_config={"database": MEMGRAPH_DATABASE},
+    memgraph_config=MemgraphConfigDict(database=MEMGRAPH_DATABASE),
 )
 
 
