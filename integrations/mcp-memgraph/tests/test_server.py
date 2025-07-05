@@ -1,6 +1,7 @@
 import asyncio
 from typing import Optional
 from contextlib import AsyncExitStack
+import os
 
 from mcp import ClientSession, StdioServerParameters
 from mcp.client.stdio import stdio_client
@@ -14,6 +15,11 @@ import pytest
 pytestmark = pytest.mark.asyncio  # Mark all tests in this file as asyncio-compatible
 
 load_dotenv()  # Load environment variables from .env
+
+# Resolve the server script path once for all tests
+server_script_path = os.path.abspath(
+    os.path.join(os.path.dirname(__file__), "../src/mcp_memgraph/server.py")
+)
 
 
 class MCPClient:
@@ -55,7 +61,6 @@ class MCPClient:
 @pytest.mark.asyncio
 async def test_mcp_client():
     """Test the MCP client connection to the server."""
-    server_script_path = "integrations/mcp-memgraph/src/mcp_memgraph/server.py"
     client = MCPClient()
     try:
         await client.connect_to_server(server_script_path)
@@ -93,7 +98,6 @@ async def test_get_schema():
 @pytest.mark.asyncio
 async def test_tools_and_resources():
     """Test that all tools and resources are present in the MCP server."""
-    server_script_path = "integrations/mcp-memgraph/src/mcp_memgraph/server.py"
     client = MCPClient()
     try:
         await client.connect_to_server(server_script_path)

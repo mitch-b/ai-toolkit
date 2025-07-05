@@ -18,7 +18,6 @@ from typing import Any, Dict, List
 # Configure logging
 logger = logger_init("mcp-memgraph")
 
-
 # Initialize FastMCP server with stateless HTTP (for streamable-http transport)
 mcp = FastMCP("mcp-memgraph", stateless_http=True)
 
@@ -29,7 +28,7 @@ MEMGRAPH_DATABASE = os.environ.get("MEMGRAPH_DATABASE", "memgraph")
 
 logger.info(f"Connecting to Memgraph db '{MEMGRAPH_DATABASE}' at {MEMGRAPH_URL} with user '{MEMGRAPH_USER}'")
 
-# Initialize Memgraph client
+# Initialize Memgraph client with explicit memgraph_config for database name
 db = Memgraph(
     url=MEMGRAPH_URL,
     username=MEMGRAPH_USER,
@@ -46,7 +45,7 @@ def run_query(query: str) -> List[Dict[str, Any]]:
         result = CypherTool(db=db).call({"query": query})
         return result
     except Exception as e:
-        return [f"Error running query: {str(e)}"]
+        return [{"error": f"Error running query: {str(e)}"}]
 
 
 @mcp.tool()
@@ -57,7 +56,7 @@ def get_configuration() -> List[Dict[str, Any]]:
         config = ShowConfigTool(db=db).call({})
         return config
     except Exception as e:
-        return [f"Error fetching configuration: {str(e)}"]
+        return [{"error": f"Error fetching configuration: {str(e)}"}]
 
 
 @mcp.tool()
@@ -68,7 +67,7 @@ def get_index() -> List[Dict[str, Any]]:
         index = ShowIndexInfoTool(db=db).call({})
         return index
     except Exception as e:
-        return [f"Error fetching index: {str(e)}"]
+        return [{"error": f"Error fetching index: {str(e)}"}]
 
 
 @mcp.tool()
@@ -79,7 +78,7 @@ def get_constraint() -> List[Dict[str, Any]]:
         constraint = ShowConstraintInfoTool(db=db).call({})
         return constraint
     except Exception as e:
-        return [f"Error fetching constraint: {str(e)}"]
+        return [{"error": f"Error fetching constraint: {str(e)}"}]
 
 
 @mcp.tool()
@@ -90,7 +89,7 @@ def get_schema() -> List[Dict[str, Any]]:
         schema = ShowSchemaInfoTool(db=db).call({})
         return schema
     except Exception as e:
-        return [f"Error fetching schema: {str(e)}"]
+        return [{"error": f"Error fetching schema: {str(e)}"}]
 
 
 @mcp.tool()
@@ -101,7 +100,7 @@ def get_storage() -> List[Dict[str, Any]]:
         storage = ShowStorageInfoTool(db=db).call({})
         return storage
     except Exception as e:
-        return [f"Error fetching storage: {str(e)}"]
+        return [{"error": f"Error fetching storage: {str(e)}"}]
 
 
 @mcp.tool()
@@ -112,7 +111,7 @@ def get_triggers() -> List[Dict[str, Any]]:
         triggers = ShowTriggersTool(db=db).call({})
         return triggers
     except Exception as e:
-        return [f"Error fetching triggers: {str(e)}"]
+        return [{"error": f"Error fetching triggers: {str(e)}"}]
 
 
 @mcp.tool()
@@ -123,7 +122,7 @@ def get_betweenness_centrality() -> List[Dict[str, Any]]:
         betweenness = BetweennessCentralityTool(db=db).call({})
         return betweenness
     except Exception as e:
-        return [f"Error fetching betweenness centrality: {str(e)}"]
+        return [{"error": f"Error fetching betweenness centrality: {str(e)}"}]
 
 
 @mcp.tool()
@@ -134,4 +133,4 @@ def get_page_rank() -> List[Dict[str, Any]]:
         page_rank = PageRankTool(db=db).call({})
         return page_rank
     except Exception as e:
-        return [f"Error fetching page rank: {str(e)}"]
+        return [{"error": f"Error fetching page rank: {str(e)}"}]

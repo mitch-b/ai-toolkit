@@ -1,0 +1,44 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Setup Python Environment (uv)",
+      "type": "shell",
+      "command": "pip3 install uv && uv venv && export PYTHONPATH=$PYTHONPATH:/workspaces/ai-toolkit-mpb/integrations/mcp-memgraph/src:/workspaces/ai-toolkit-mpb/memgraph-toolbox/src && source .venv/bin/activate && uv pip install -e .[test]",
+      "args": [],
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      }
+    },
+    { 
+      "label": "Run All Integration Tests (local)",
+      "type": "shell",
+      "command": "bash",
+      "args": [
+        "-c",
+        "docker run --rm -d -p 7687:7687 --name memgraph memgraph/memgraph-mage:latest --schema-info-enabled=True --telemetry-enabled=false; sleep 5; (cd memgraph-toolbox && uv venv && uv pip install -e .[test] && uv run pytest .) || true; (cd integrations/mcp-memgraph && uv venv && uv pip install -e .[test] && uv run pytest .) || true; (cd integrations/langchain-memgraph && uv venv && uv pip install -e .[test] && uv run pytest .) || true;"
+      ],
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      }
+    },
+    { 
+      "label": "Run MCP Integration Tests (local)",
+      "type": "shell",
+      "command": "bash",
+      "args": [
+        "-c",
+        "docker run --rm -d -p 7687:7687 --name memgraph memgraph/memgraph-mage:latest --schema-info-enabled=True --telemetry-enabled=false; sleep 5; (uv run pytest integrations/mcp-memgraph/tests) || true;"
+      ],
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      }
+    }
+  ]
+}
