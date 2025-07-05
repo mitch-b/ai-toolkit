@@ -25,7 +25,6 @@ class Memgraph:
         - MEMGRAPH_USER (default: "")
         - MEMGRAPH_PASSWORD (default: "")
         - MEMGRAPH_DATABASE (default: "memgraph")
-        - memgraph_config: Optional dict for additional Memgraph-specific config (e.g., {"database": "mydb"})
 
         Args:
             url: The Memgraph connection URL
