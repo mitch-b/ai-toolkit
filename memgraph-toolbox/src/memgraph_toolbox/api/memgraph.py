@@ -13,7 +13,8 @@ class Memgraph:
         url: str = None,
         username: str = None,
         password: str = None,
-        database: str = None,
+        *,
+        memgraph_config: Optional[Dict] = None,
         driver_config: Optional[Dict] = None,
     ):
         """
@@ -24,12 +25,13 @@ class Memgraph:
         - MEMGRAPH_USER (default: "")
         - MEMGRAPH_PASSWORD (default: "")
         - MEMGRAPH_DATABASE (default: "memgraph")
+        - memgraph_config: Optional dict for additional Memgraph-specific config (e.g., {"database": "mydb"})
 
         Args:
             url: The Memgraph connection URL
             username: Username for authentication
             password: Password for authentication
-            database: The database name to connect to (default: "memgraph")
+            memgraph_config: Optional dict for Memgraph-specific config (e.g., {"database": "mydb"})
             driver_config: Additional Neo4j driver configuration
         """
 
@@ -42,7 +44,11 @@ class Memgraph:
             url, auth=(username, password), **(driver_config or {})
         )
 
-        self.database = database or os.environ.get("MEMGRAPH_DATABASE", "memgraph")
+        # Determine database name: memgraph_config > env > default
+        if memgraph_config and "database" in memgraph_config:
+            self.database = memgraph_config["database"]
+        else:
+            self.database = os.environ.get("MEMGRAPH_DATABASE", "memgraph")
 
         try:
             import neo4j
