@@ -34,7 +34,7 @@ db = Memgraph(
     url=MEMGRAPH_URL,
     username=MEMGRAPH_USER,
     password=MEMGRAPH_PASSWORD,
-    memgraph_config={"database": MEMGRAPH_DATABASE},
+    database=MEMGRAPH_DATABASE,
 )
 
 
